@@ -22,19 +22,25 @@ import Evtx.Views as e_views
 
 def main():
     import argparse
+    dolapo = "new.xml"
 
     parser = argparse.ArgumentParser(
         description="Dump a binary EVTX file into XML.")
     parser.add_argument("evtx", type=str,
                         help="Path to the Windows EVTX event log file")
+    parser.add_argument("-o", "--output", type=str, default=dolapo,
+                        help="The Path to save the XML output file (default: my.xml)")
     args = parser.parse_args()
 
     with evtx.Evtx(args.evtx) as log:
-        print(e_views.XML_HEADER)
-        print("<Events>")
-        for record in log.records():
-            print(record.xml())
-        print("</Events>")
+        with open(args.output, "w") as xml_file:
+            xml_file.write(e_views.XML_HEADER)
+            xml_file.write("<Events>")
+            for record in log.records():
+                xml_file.write(record.xml())
+            xml_file.write("</Events>")
+    
+    print("XML output saved to:", args.output)
 
 
 if __name__ == "__main__":
